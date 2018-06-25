@@ -37,7 +37,7 @@ def to_csv(frame, name):
 # Remove the commas from Volume and change its data type to float and remove all NaN rows
 def data_cleaning(company):
     company["Volume"] = company["Volume"].str.replace(",", "").astype(float)
-    company.dropna(how="any")
+    company.dropna(how="any", inplace=True)
 
 
 companies = ("AAPL", "GOOGL", "MSFT")					# Name of the companies whose data will be scraped and analysed
