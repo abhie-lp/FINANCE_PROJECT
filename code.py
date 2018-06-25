@@ -40,7 +40,7 @@ def data_cleaning(company):
     company.dropna(how="any", inplace=True)
 
 
-companies = ("AAPL", "GOOGL", "MSFT")					# Name of the companies whose data will be scraped and analysed
+company_code = ("AAPL", "GOOGL", "MSFT")					# Name of the companies whose data will be scraped and analysed
 
 
 for company in companies:
@@ -56,5 +56,6 @@ microsoft = pd.read_csv("MSFT_data.csv", index_col="Date")
 companies = (apple, google, microsoft)
 
 # Converting Volume to float and remove all NaN rows
-for company in companies:
-    data_cleaning(company)
+for i in range(len(companies)):
+    data_cleaning(companies[i])
+    to_csv(companies[i], company_code[i])               # Storing the changes on local
