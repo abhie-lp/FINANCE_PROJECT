@@ -34,11 +34,27 @@ def create_dframe(scrape_data):
 def to_csv(frame, name):
     frame.to_csv(f"{name}_data.csv", encoding="utf-8")
 
+# Remove the commas from Volume and change its data type to float and remove all NaN rows
+def data_cleaning(company):
+    company["Volume"] = company["Volume"].str.replace(",", "").astype(float)
+    company.dropna(how="any")
+
 
 companies = ("AAPL", "GOOGL", "MSFT")					# Name of the companies whose data will be scraped and analysed
 
 
 for company in companies:
-    scrape_data = scraping(company)						# Function call to start the scraping of the page
+    scrape_data = scraping(company)						# Get the page-source and scrape the data
     frame = create_dframe(scrape_data[1:])				# Creating DataFrame from index 1 as 0 is blank
     to_csv(frame, company)								# Storing the data as .csv to analyse it in future
+
+# Get the data from local to do analysis
+apple = pd.read_csv("AAPL_data.csv", index_col="Date")
+google = pd.read_csv("GOOGL_data.csv", index_col="Date")
+microsoft = pd.read_csv("MSFT_data.csv", index_col="Date")
+
+companies = (apple, google, microsoft)
+
+# Converting Volume to float and remove all NaN rows
+for company in companies:
+    data_cleaning(company)
