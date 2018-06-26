@@ -43,15 +43,15 @@ def data_cleaning(company):
 company_code = ("AAPL", "GOOGL", "MSFT")					# Name of the companies whose data will be scraped and analysed
 
 
-for company in companies:
+for company in company_code:
     scrape_data = scraping(company)						# Get the page-source and scrape the data
     frame = create_dframe(scrape_data[1:])				# Creating DataFrame from index 1 as 0 is blank
     to_csv(frame, company)								# Storing the data as .csv to analyse it in future
 
-# Get the data from local to do analysis
-apple = pd.read_csv("AAPL_data.csv", index_col="Date")
-google = pd.read_csv("GOOGL_data.csv", index_col="Date")
-microsoft = pd.read_csv("MSFT_data.csv", index_col="Date")
+# Get the data from local to do analysis and converting index to DateTime format
+apple = pd.read_csv("AAPL_data.csv", index_col="Date", parse_dates=True)
+google = pd.read_csv("GOOGL_data.csv", index_col="Date", parse_dates=True)
+microsoft = pd.read_csv("MSFT_data.csv", index_col="Date", parse_dates=True)
 
 companies = (apple, google, microsoft)
 
@@ -59,3 +59,20 @@ companies = (apple, google, microsoft)
 for i in range(len(companies)):
     data_cleaning(companies[i])
     to_csv(companies[i], company_code[i])               # Storing the changes on local
+
+open_price = pd.DataFrame({"AAPL": apple["Open"],       # DataFrame to store the opening price of all companies
+                          "GOOGL": google["Open"],
+                          "MSFT": microsoft["Open"]})
+
+open_price.dropna(how="any", inplace=True)              # Removing all the rows w/ NaN values
+
+open_price.plot(secondary_y=["AAPL", "MSFT"], grid=True,)      # Line graph of open_price
+plt.show()
+
+close_open = pd.DataFrame({"AAPL": apple["Close"] - apple["Open"],              # DataFrame to store the difference b/w Open and Close
+                          "GOOGL": google["Close"] - google["Open"],
+                          "MSFT": microsoft["Close"] - microsoft["Open"]})
+
+close_open.dropna(how="any", inplace=True)
+close_open.plot(grid=True)
+plt.show()
