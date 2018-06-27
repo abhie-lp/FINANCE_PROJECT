@@ -2,6 +2,7 @@
 # The data will be fetched from https://markets.financialcontent.com only
 # Initially the data fetched is of Google, Microsoft and Apple
 
+import numpy as np
 import pandas as pd
 import bs4 as bs
 import urllib.request as ur
@@ -76,3 +77,39 @@ close_open = pd.DataFrame({"AAPL": apple["Close"] - apple["Open"],              
 close_open.dropna(how="any", inplace=True)
 close_open.plot(grid=True)
 plt.show()
+
+from sklearn import datasets, linear_model
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+companies = ('AAPL_data.csv','GOOGL_data.csv','MSFT_data.csv')
+company_name = ('Apple','Google','Microsoft')
+
+for i in range(3):
+    df = pd.read_csv(companies[i])
+    prices = df['Open'].tolist()
+    dates = list(reversed(range(len(prices))))
+
+    # Convert to 1d Vector
+    dates = np.reshape(dates, (len(dates), 1))
+    prices = np.reshape(prices, (len(prices), 1))
+    regressor = LinearRegression()
+    regressor.fit(dates, prices)
+    
+    # Visualize Results
+    print('\n\033[1m',("Prediction for "+company_name[i]).center(100))
+    fig = plt.gcf()
+    fig.set_size_inches(15, 10)
+    plt.scatter(dates, prices, color='yellow', label= 'Actual Price')    # Plotting initial Data Points
+    plt.plot(dates, regressor.predict(dates), color='red', linewidth=2, label = 'Predicted Price')    # Plotting line of Linear Regression
+    plt.title('Linear Regression | Time vs. Price')
+    plt.legend()
+    plt.xlabel('Date Integer')
+    plt.show()
+ 
+    # Predict Price on Given Date
+    date = len(dates)+1
+    predicted_price =regressor.predict(date)
+    print("Predicted price :", predicted_price[0][0])
+    print("Regression Coefficient :", regressor.coef_[0][0])
+    print("Regression Intercept :", regressor.intercept_[0])
