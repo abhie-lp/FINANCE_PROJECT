@@ -79,12 +79,6 @@ close_open.dropna(how="any", inplace=True)
 close_open.plot(grid=True)
 plt.show()
 
-close_open = pd.DataFrame({"AAPL": apple["Close"] - apple["Open"],          # DataFrame to store difference b/w Close and Open
-                          "GOOGL": google["Close"] - google["Open"],
-                          "MSFT": microsoft["Close"] - microsoft["Open"]})
-
-close_open.dropna(how="any", inplace=True)              # Droping all rows with NNaN values
-
 close_open.plot(figsize=(15, 10))                       # Graph for close_open
 plt.title("Difference in Close and Open", fontsize=20, fontweight="bold")
 plt.ylabel("Close - Open ($)")
@@ -165,10 +159,12 @@ for i in range(3):
     dates = list(reversed(range(len(prices))))
 
     # Convert to 1d Vector
-    dates = np.reshape(dates, (len(dates), 1))
-    prices = np.reshape(prices, (len(prices), 1))
+    dates = np.reshape(dates, (len(dates), 1))      # Dates will act as a Feature vector
+    prices = np.reshape(prices, (len(prices), 1))   # Prices will act as a Response vector
+    
+    # Define Linear Regressor Object
     regressor = LinearRegression()
-    regressor.fit(dates, prices)
+    regressor.fit(dates, prices)    #Fitting a linear model
     
     # Visualize Results
     print('\n\033[1m',("Prediction for "+company_name[i]).center(100))
